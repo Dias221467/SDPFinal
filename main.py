@@ -1,9 +1,8 @@
-from cli.cli import CLI
-from commands.custom_commands import HelloWordCommand
+from conf import cli
+from commands.custom_commands import *
 
 def main():
-    cli = CLI()
-    cli.commands.register_command(HelloWordCommand)
+    cli.commands.register_command([HelloWordCommand, AddSpotifyItem, DisplaySpotifyItems, DisplaySpotifyMusic, DisplayArtists, AddArtists, Subscribe])
     cli.run()
 
 if __name__ == '__main__':
