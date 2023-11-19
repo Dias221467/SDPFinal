@@ -1,6 +1,7 @@
 from commands.commands import Commands
 from spotify.spotify import Spotify
 from user.user import User
+from adapter.adapter import Adapter
 class CLI:
 
     def __new__(self):
@@ -12,6 +13,7 @@ class CLI:
         self.commands = Commands()
         self.spotify = Spotify()
         self.user = None
+        self.adapter = None
 
     def auth(self):
         from conf import users
@@ -30,24 +32,30 @@ class CLI:
 
     def run(self):
         imported_commands = self.commands.import_commands()
+        self.adapter = Adapter(imported_commands)
         while True:
             if self.user is None:
                 self.auth()
             
             print("\nAvailable commands:")
             for name, _ in imported_commands.items():
-                print(f"{name} - {_['description']}")
+                print(f"{_['id']}) {name} - {_['description']}")
 
 
             choice = input("Enter a command name or ID or 'exit' to quit: ")
+            converted_input = self.adapter.adapt_input(choice)
+
 
             if choice == 'exit':
                 print("Exiting CLI.")
                 break
 
-            if choice in imported_commands:
-                for decorator in imported_commands[choice]['decorator']:
-                    imported_commands[choice]['class'] = decorator(imported_commands[choice]['class'])
-                imported_commands[choice]['class'].execute()
+            if converted_input in imported_commands:
+                if imported_commands[converted_input]['decorator'] is not []:
+                    imported_commands[converted_input]['class'].execute(self)
+                else:
+                    for decorator in imported_commands[converted_input]['decorator']:
+                        imported_commands[converted_input]['class'] = decorator(imported_commands[converted_input]['class'])
+                    imported_commands[converted_input]['class'].execute(self)
             else:
                 print("Invalid command. Please try again.")
