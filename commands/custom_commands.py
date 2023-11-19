@@ -1,5 +1,5 @@
 from conf import cli
-
+from .decorators import WarnCommandDecorator
 class Command:
     def execute(self):
         pass
@@ -59,7 +59,7 @@ class AddArtists(Command):
 class Subscribe(Command):
     name = 'Subscribe'
     description = 'Subscribe to spotify news'
-    decorator_classes = []
+    decorator_classes = [WarnCommandDecorator]
 
     def execute(self):
         cli.spotify.addSubscriber(cli.user)

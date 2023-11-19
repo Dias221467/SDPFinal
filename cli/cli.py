@@ -46,6 +46,8 @@ class CLI:
                 break
 
             if choice in imported_commands:
-                imported_commands[choice]['class'].execute([])
+                for decorator in imported_commands[choice]['decorator']:
+                    imported_commands[choice]['class'] = decorator(imported_commands[choice]['class'])
+                imported_commands[choice]['class'].execute()
             else:
                 print("Invalid command. Please try again.")
